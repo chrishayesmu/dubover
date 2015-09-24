@@ -7,7 +7,7 @@
 (function() {
 	var defaultSettings = {
 		HideImagesInChat: true,
-		HideVideoChat: false
+		HideVideoChat: true
 	};
 
 	window.loadSettingsFromLocalStorage = function() {

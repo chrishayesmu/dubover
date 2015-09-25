@@ -1,15 +1,17 @@
 // ==UserScript==
-// @name       dubover zencal
-// @namespace  https://github.com/zencal/dubover
-// @version    0.2
+// @name        dubover zencal
+// @namespace   https://github.com/zencal/dubover
+// @version     0.2
 // @description Provides UI enhancements for dubtrack.fm
-// @match      https://www.dubtrack.fm/*
-// @copyright  2015+, Chris Hayes
-// @run-at     document-end
-// @require https://code.jquery.com/jquery-2.1.4.min.js
-// @require js/settings.js
-// @resource SettingsMenuCss css/settingsMenu.css
-// @resource SettingsMenuTemplate html/settingsMenu.html
+// @match       https://www.dubtrack.fm/*
+// @copyright   2015+, Chris Hayes
+// @run-at      document-end
+// @grant       GM_xmlhttpRequest
+// @require     https://code.jquery.com/jquery-2.1.4.min.js
+// @require     js/settings.js
+// @require     js/plugJSONImporter.js
+// @resource    SettingsMenuCss css/settingsMenu.css
+// @resource    SettingsMenuTemplate html/settingsMenu.html
 // @downloadURL https://rawgit.com/zencal/dubover/master/main.user.js
 // ==/UserScript==
 
@@ -55,15 +57,25 @@
         setDisplayOfVideoChat();
         setDisplayOfVideoComments();
         createPopOutChatButton();
+        createPlugJSONImporterButton();
 
         console.log("dubover initialization is complete.");
+    }
+
+    /**
+     * Injects a button to trigger the plug JSON importer
+     */
+    function createPlugJSONImporterButton() {
+        var $importerButton = $("<div style='cursor: pointer; position: absolute; top: 0.9em; left: 25em; z-index: 9999'>Import JSON</div>");
+        $importerButton.click(importFromPlugJSON);
+        $(document.body).append($importerButton);
     }
 
     /**
      * Injects a button to trigger pop out chat
      */
     function createPopOutChatButton() {
-        var $popOutButton = $("<div style='cursor: pointer; position: absolute; top: 0.9em; right: 25em; z-index: 9999'>Pop Out</div>");
+        var $popOutButton = $("<div style='cursor: pointer; position: absolute; top: 0.9em; right: 30em; z-index: 9999'>Pop Out</div>");
 
         $popOutButton.click(function() {
             var chatWindow = window.open("","ExpandedWindow","height=800,width=400,status=no,toolbar=no,menubar=no,location=no", false);
@@ -110,20 +122,18 @@
         imagesInChatObserver = new MutationObserver(function(mutations) {
             if (settings.HideImagesInChat) {
                 mutations.forEach(function(mutation) {
-                    if (mutation.target && mutation.target.classList.contains("chat-main") && mutation.addedNodes.length > 0) {
-                        for (var i = 0; i < mutation.addedNodes.length; i++) {
-                            var $node = $(mutation.addedNodes[i]);
+                    for (var i = 0; i < mutation.addedNodes.length; i++) {
+                        var $node = $(mutation.addedNodes[i]);
 
-                            // Find the added images (but only under a node with class autolink, or else
-                            // we'll accidentally replace the user's avatar as well)
-                            var $imgTags = $node.find("a.autolink > img");
+                        // Find the added images (but only under a node with class autolink, or else
+                        // we'll accidentally replace the user's avatar as well)
+                        var $imgTags = $node.find("a.autolink > img");
 
-                            $imgTags.each(function(index, item) {
-                                var $item = $(item);
-                                var src = $item.attr("src");
-                                $item.replaceWith(src);
-                            });
-                        }
+                        $imgTags.each(function(index, item) {
+                            var $item = $(item);
+                            var src = $item.attr("src");
+                            $item.replaceWith(src);
+                        });
                     }
                 });
             }

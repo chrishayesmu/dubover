@@ -10,7 +10,8 @@
     var defaultSettings = {
         HideImagesInChat: true,
         HideVideoChat: false,
-        HideVideoComments: true
+        HideVideoComments: true,
+        MoveUsersSectionUnderVideo: true
     };
 
     var $menu;

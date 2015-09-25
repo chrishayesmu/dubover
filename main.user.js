@@ -85,20 +85,18 @@
         imagesInChatObserver = new MutationObserver(function(mutations) {
             if (settings.HideImagesInChat) {
                 mutations.forEach(function(mutation) {
-                    if (mutation.target && mutation.target.classList.contains("chat-main") && mutation.addedNodes.length > 0) {
-                        for (var i = 0; i < mutation.addedNodes.length; i++) {
-                            var $node = $(mutation.addedNodes[i]);
+                    for (var i = 0; i < mutation.addedNodes.length; i++) {
+                        var $node = $(mutation.addedNodes[i]);
 
-                            // Find the added images (but only under a node with class autolink, or else
-                            // we'll accidentally replace the user's avatar as well)
-                            var $imgTags = $node.find("a.autolink > img");
+                        // Find the added images (but only under a node with class autolink, or else
+                        // we'll accidentally replace the user's avatar as well)
+                        var $imgTags = $node.find("a.autolink > img");
 
-                            $imgTags.each(function(index, item) {
-                                var $item = $(item);
-                                var src = $item.attr("src");
-                                $item.replaceWith(src);
-                            });
-                        }
+                        $imgTags.each(function(index, item) {
+                            var $item = $(item);
+                            var src = $item.attr("src");
+                            $item.replaceWith(src);
+                        });
                     }
                 });
             }

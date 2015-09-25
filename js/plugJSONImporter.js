@@ -1,5 +1,5 @@
 (function() {
-    window.importFromPlugJSON = function() {
+    function importFromPlugJSON() {
         var json = JSON.parse(prompt("Open your JSON file and paste contents here"));
         var playlists = Object.keys(json.playlists);
 

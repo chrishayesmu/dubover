@@ -9,8 +9,9 @@
     // an entry in this object will be saved in localStorage.
     var defaultSettings = {
         HideImagesInChat: true,
-        HideVideoChat: true,
-        HideVideoComments: true
+        HideVideoChat: false,
+        HideVideoComments: true,
+        MoveUsersSectionUnderVideo: true
     };
 
     var $menu;

@@ -11,7 +11,8 @@
         HideImagesInChat: true,
         HideVideoChat: false,
         HideVideoComments: true,
-        MoveUsersSectionUnderVideo: true
+        MoveUsersSectionUnderVideo: true,
+        ReplaceDubsWithUsernames: true
     };
 
     var $menu;

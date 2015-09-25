@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name        dubover
 // @namespace   https://github.com/chrishayesmu/dubover
-// @version     0.3.2
+// @version     0.4
 // @description Provides UI enhancements for dubtrack.fm
 // @match       https://www.dubtrack.fm/*
 // @copyright   2015+, Chris Hayes
@@ -55,6 +55,7 @@
         createSettingsMenu();
         moveUserList();
         observeForImagesInChat();
+        replaceDubsWithUsernames();
         setDisplayOfVideoChat();
         setDisplayOfVideoComments();
         createPopOutChatButton();
@@ -67,33 +68,54 @@
      * Injects a button to trigger the plug JSON importer
      */
     function createPlugJSONImporterButton() {
-        var $importerButton = $("<div style='cursor: pointer; position: absolute; top: 0.9em; left: 25em; z-index: 9999'>Import JSON</div>");
-        $importerButton.click(importFromPlugJSON);
-        $(document.body).append($importerButton);
+        executeWhenSelectorMatched(".main-menu", function($mainMenu) {
+            var $importerButton = $("<li><span>Import JSON</span></li>");
+            $importerButton.css({
+                height: "",
+                marginTop: "0.85em",
+                maxHeight: "18em",
+                paddingLeft: "0.4em",
+                overflowY: "auto"
+            });
+
+            $importerButton.click(importFromPlugJSON);
+            $mainMenu.append($importerButton);
+        });
     }
 
     /**
      * Injects a button to trigger pop out chat
+     * TODO: Fix styling
      */
     function createPopOutChatButton() {
-        var $popOutButton = $("<div style='cursor: pointer; position: absolute; top: 0.9em; right: 30em; z-index: 9999'>Pop Out</div>");
-
-        $popOutButton.click(function() {
-            var chatWindow = window.open("","ExpandedWindow","height=800,width=400,status=no,toolbar=no,menubar=no,location=no", false);
-            //var $chat = $("#chat");
-            var $chat = $(".right_section");
-            //$("link, style, script").each(function() {
-            //   $(chatWindow.document.head).append($(this).clone());
-            //});
-
-            $(chatWindow.document.body).append($chat);
-            $(chatWindow).unload(function() {
-                //$(".right_section").append($chat);
-                $("#main-room").append($chat);
+        executeWhenSelectorMatched(".chat_tools", function($chatTools) {
+            var $popOutButton = $("<span>Pop Out</span>");
+            $popOutButton.css({
+                height: "",
+                marginTop: "1.5em",
+                maxHeight: "18em",
+                paddingLeft: "1.5em",
+                overflowY: "auto"
             });
-        });
 
-        $(document.body).append($popOutButton);
+            $popOutButton.click(function() {
+                var chatWindow = window.open("","ExpandedWindow","height=800,width=400,status=no,toolbar=no,menubar=no,location=no", false);
+                var $chat = $("#chat");
+                $popOutButton.toggle();
+
+                //$("link, style, script").each(function() {
+                //   $(chatWindow.document.head).append($(this).clone());
+                //});
+
+                $(chatWindow.document.body).append($chat);
+                $(chatWindow).unload(function() {
+                    $(".right_section").append($chat);
+                    $popOutButton.toggle();
+                });
+            });
+
+            //$($chatTools).append($popOutButton); //TODO: Reimplement once styling is fixed
+        });
     }
 
     /**
@@ -141,6 +163,19 @@
                     overflowY: "auto"
                 });
             });
+        }
+    }
+
+    function replaceDubsWithUsernames() {
+        if (settings.ReplaceDubsWithUsernames) {
+            injectCssInHead("\
+            ul.avatar-list li p.username {\
+                display: block;\
+            }\
+            ul.avatar-list li p.dubs {\
+                display: none\
+            }\
+            ");
         }
     }
 

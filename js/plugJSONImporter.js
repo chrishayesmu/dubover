@@ -1,6 +1,6 @@
 (function() {
     window.importFromPlugJSON = function() {
-        var json = JSON.parse(prompt("Open your JSON file and paste contents here"));
+        var json = JSON.parse(prompt("Open your JSON file and paste contents here. You may need to refresh dubtrack to see your playlists update."));
         var playlists = Object.keys(json.playlists);
 
         $.each(playlists, function(index, title) {

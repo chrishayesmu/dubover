@@ -5,8 +5,8 @@
     padding: 0.5em;
     z-index: 9999;
 
-    height: 9em;
-    width: 25em;
+    height: 10em;
+    width: 30em;
 
     margin: auto;
     position: absolute;
@@ -17,7 +17,7 @@
 }
 
 #duboverSettingsMenuApplyButton {
-    width: 11.5em;
+    width: 13.5em;
 
     position: absolute;
     bottom: 0.5em;
@@ -25,7 +25,7 @@
 }
 
 #duboverSettingsMenuCancelButton {
-    width: 11.5em;
+    width: 13.5em;
 
     position: absolute;
     bottom: 0.5em;

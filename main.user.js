@@ -8,6 +8,7 @@
 // @run-at     document-end
 // @require https://code.jquery.com/jquery-2.1.4.min.js
 // @require js/settings.js
+// @require js/plugJSONImporter.js
 // @resource SettingsMenuCss css/settingsMenu.css
 // @resource SettingsMenuTemplate html/settingsMenu.html
 // @downloadURL https://rawgit.com/zencal/dubover/master/main.user.js
@@ -55,8 +56,18 @@
         setDisplayOfVideoChat();
         setDisplayOfVideoComments();
         createPopOutChatButton();
+        createPlugJSONImporterButton();
 
         console.log("dubover initialization is complete.");
+    }
+
+    /**
+     * Injects a button to trigger the plug JSON importer
+     */
+    function createPlugJSONImporterButton() {
+        var $importerButton = $("<div style='cursor: pointer; position: absolute; top: 0.9em; left: 25em; z-index: 9999'>Import JSON</div>");
+
+        $importerButton.click(importFromPlugJSON);
     }
 
     /**

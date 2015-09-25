@@ -18,7 +18,8 @@
                 },
                 onload: function(data) {
                     // Add all the items to the playlist
-                    var dubtrackPlaylistId = data.data._id;
+                    var jsonData = JSON.parse(data.responseText);
+                    var dubtrackPlaylistId = jsonData.data._id;
                     var counter = 0;
                     var playlist = json.playlists[title];
                     console.log("Created dubtrack playlist for playlist: " + title);

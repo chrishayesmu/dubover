@@ -66,15 +66,15 @@
      */
     function createPlugJSONImporterButton() {
         var $importerButton = $("<div style='cursor: pointer; position: absolute; top: 0.9em; left: 25em; z-index: 9999'>Import JSON</div>");
-
         $importerButton.click(importFromPlugJSON);
+        $(document.body).append($importerButton);
     }
 
     /**
      * Injects a button to trigger pop out chat
      */
     function createPopOutChatButton() {
-        var $popOutButton = $("<div style='cursor: pointer; position: absolute; top: 0.9em; right: 25em; z-index: 9999'>Pop Out</div>");
+        var $popOutButton = $("<div style='cursor: pointer; position: absolute; top: 0.9em; right: 30em; z-index: 9999'>Pop Out</div>");
 
         $popOutButton.click(function() {
             var chatWindow = window.open("","ExpandedWindow","height=800,width=400,status=no,toolbar=no,menubar=no,location=no", false);

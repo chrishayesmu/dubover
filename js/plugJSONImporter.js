@@ -9,7 +9,7 @@
                 "name": title
             };
 
-            $.ajax({
+            GM_xmlhttpRequest({
                 type: "POST",
                 url: "https://api.dubtrack.fm/playlist",
                 data: JSON.stringify(playlistDetails),
@@ -32,7 +32,7 @@
                             "type": type
                         };
 
-                        $.ajax({
+                        GM_xmlhttpRequest({
                             type: "POST",
                             url: "https://api.dubtrack.fm/playlist/" + dubtrackPlaylistId + "/songs",
                             data: JSON.stringify(videoDetails),

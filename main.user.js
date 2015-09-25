@@ -1,16 +1,17 @@
 // ==UserScript==
-// @name       dubover zencal
-// @namespace  https://github.com/zencal/dubover
-// @version    0.2
+// @name        dubover zencal
+// @namespace   https://github.com/zencal/dubover
+// @version     0.2
 // @description Provides UI enhancements for dubtrack.fm
-// @match      https://www.dubtrack.fm/*
-// @copyright  2015+, Chris Hayes
-// @run-at     document-end
-// @require https://code.jquery.com/jquery-2.1.4.min.js
-// @require js/settings.js
-// @require js/plugJSONImporter.js
-// @resource SettingsMenuCss css/settingsMenu.css
-// @resource SettingsMenuTemplate html/settingsMenu.html
+// @match       https://www.dubtrack.fm/*
+// @copyright   2015+, Chris Hayes
+// @run-at      document-end
+// @grant       GM_xmlhttpRequest
+// @require     https://code.jquery.com/jquery-2.1.4.min.js
+// @require     js/settings.js
+// @require     js/plugJSONImporter.js
+// @resource    SettingsMenuCss css/settingsMenu.css
+// @resource    SettingsMenuTemplate html/settingsMenu.html
 // @downloadURL https://rawgit.com/zencal/dubover/master/main.user.js
 // ==/UserScript==
 

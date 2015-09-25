@@ -1,7 +1,7 @@
 // ==UserScript==
-// @name        dubover zencal
-// @namespace   https://github.com/zencal/dubover
-// @version     0.2
+// @name       dubover
+// @namespace  https://github.com/chrishayesmu/dubover
+// @version    0.3
 // @description Provides UI enhancements for dubtrack.fm
 // @match       https://www.dubtrack.fm/*
 // @copyright   2015+, Chris Hayes
@@ -12,7 +12,7 @@
 // @require     js/plugJSONImporter.js
 // @resource    SettingsMenuCss css/settingsMenu.css
 // @resource    SettingsMenuTemplate html/settingsMenu.html
-// @downloadURL https://rawgit.com/zencal/dubover/master/main.user.js
+// @downloadURL https://rawgit.com/chrishayesmu/dubover/master/main.user.js
 // ==/UserScript==
 
 (function() {
@@ -53,6 +53,7 @@
         $videoCommentsElement = $("#room-comments");
 
         createSettingsMenu();
+        moveUserList();
         observeForImagesInChat();
         setDisplayOfVideoChat();
         setDisplayOfVideoComments();
@@ -93,6 +94,54 @@
         });
 
         $(document.body).append($popOutButton);
+    }
+
+    /**
+     * Executes the given callback the first time a DOM element is found matching
+     * the selector given. Elements are checked for periodically. Once found, the
+     * callback will be executed only once.
+     *
+     * @param {string} selector - A valid jQuery selector.
+     * @param {function} callback - A function to call when an element is found.
+     * @param {integer} timerIntervalInMs - Optional. How often to check for the element, in milliseconds.
+     * @param {object} context - Optional. If provided, the callback function will be invoked in this context.
+     */
+    function executeWhenSelectorMatched(selector, callback, timerIntervalInMs, context) {
+        timerIntervalInMs = timerIntervalInMs || 250;
+
+        var $elements = $(selector);
+        if ($elements.length > 0) {
+            callback.call(context, $elements);
+        }
+        else {
+            var timeoutCallback = function() {
+                executeWhenSelectorMatched(selector, callback, context);
+            };
+
+            setTimeout(timeoutCallback, timerIntervalInMs);
+        }
+    }
+
+    /**
+     * Moves the list of users in the room to be underneath the active video.
+     */
+    function moveUserList() {
+        if (settings.MoveUsersSectionUnderVideo) {
+            executeWhenSelectorMatched("#main-user-list-room", function($userList) {
+                var $leftSection = $("section.left_section");
+                var $userSection = $("<section></section>");
+                $userList.appendTo($userSection);
+                $userSection.appendTo($leftSection);
+
+                $userList.css({
+                    height: "",
+                    marginTop: "1.5em",
+                    maxHeight: "18em",
+                    paddingLeft: "0.4em",
+                    overflowY: "scroll"
+                });
+            });
+        }
     }
 
     /**

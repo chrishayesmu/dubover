@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name       dubover
 // @namespace  https://github.com/chrishayesmu/dubover
-// @version    0.3
+// @version    0.3.1
 // @description Provides UI enhancements for dubtrack.fm
 // @match       https://www.dubtrack.fm/*
 // @copyright   2015+, Chris Hayes
@@ -138,7 +138,7 @@
                     marginTop: "1.5em",
                     maxHeight: "18em",
                     paddingLeft: "0.4em",
-                    overflowY: "scroll"
+                    overflowY: "auto"
                 });
             });
         }

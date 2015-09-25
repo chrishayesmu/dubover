@@ -9,13 +9,14 @@
                 "name": title
             };
 
-            $.ajax({
-                type: "POST",
+            GM_xmlhttpRequest({
+                method: "POST",
                 url: "https://api.dubtrack.fm/playlist",
                 data: JSON.stringify(playlistDetails),
-                contentType: "application/json; charset=utf-8",
-                dataType: "json",
-                success: function(data) {
+                headers:    {
+                    "Content-Type": "application/json"
+                },
+                onload: function(data) {
                     // Add all the items to the playlist
                     var dubtrackPlaylistId = data.data._id;
                     var counter = 0;
@@ -32,22 +33,23 @@
                             "type": type
                         };
 
-                        $.ajax({
-                            type: "POST",
+                        GM_xmlhttpRequest({
+                            method: "POST",
                             url: "https://api.dubtrack.fm/playlist/" + dubtrackPlaylistId + "/songs",
                             data: JSON.stringify(videoDetails),
-                            contentType: "application/json; charset=utf-8",
-                            dataType: "json",
-                            success: function( data ) {
+                            headers:    {
+                                "Content-Type": "application/json"
+                            },
+                            onload: function( data ) {
                                 console.log("Added " + counter + " song(s) to dubtrack playlist " + title);
                             },
-                            failure: function( error ) {
+                            onerror: function( error ) {
                                 alert("Something went wrong while adding an item to the new playlist: " + error);
                             }
                         });
                     });
                 },
-                failure: function( error ) {
+                onerror: function( error ) {
                     alert("Something went wrong while creating the playlist: " + error);
                 }
             });

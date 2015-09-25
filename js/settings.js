@@ -9,7 +9,7 @@
     // an entry in this object will be saved in localStorage.
     var defaultSettings = {
         HideImagesInChat: true,
-        HideVideoChat: false,
+        HideVideoChat: true,
         HideVideoComments: true
     };
 

@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name       dubover
-// @namespace  https://github.com/chrishayesmu/dubover
+// @namespace  https://github.com/zencal/dubover
 // @version    0.2
 // @description Provides UI enhancements for dubtrack.fm
 // @match      https://www.dubtrack.fm/*
@@ -10,7 +10,7 @@
 // @require js/settings.js
 // @resource SettingsMenuCss css/settingsMenu.css
 // @resource SettingsMenuTemplate html/settingsMenu.html
-// @downloadURL https://rawgit.com/chrishayesmu/dubover/master/main.user.js
+// @downloadURL https://rawgit.com/zencal/dubover/master/main.user.js
 // ==/UserScript==
 
 (function() {

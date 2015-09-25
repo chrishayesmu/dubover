@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name       dubover
 // @namespace  https://github.com/chrishayesmu/dubover
-// @version    0.3.1
+// @version    0.3.2
 // @description Provides UI enhancements for dubtrack.fm
 // @match      https://www.dubtrack.fm/*
 // @copyright  2015+, Chris Hayes
@@ -10,6 +10,7 @@
 // @require js/settings.js
 // @resource SettingsMenuCss css/settingsMenu.css
 // @resource SettingsMenuTemplate html/settingsMenu.html
+// @grant GM_getResourceText
 // @downloadURL https://rawgit.com/chrishayesmu/dubover/master/main.user.js
 // ==/UserScript==
 

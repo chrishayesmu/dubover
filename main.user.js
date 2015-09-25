@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name       dubover
+// @name       dubover zencal
 // @namespace  https://github.com/zencal/dubover
 // @version    0.2
 // @description Provides UI enhancements for dubtrack.fm
@@ -54,8 +54,33 @@
         observeForImagesInChat();
         setDisplayOfVideoChat();
         setDisplayOfVideoComments();
+        createPopOutChatButton();
 
         console.log("dubover initialization is complete.");
+    }
+
+    /**
+     * Injects a button to trigger pop out chat
+     */
+    function createPopOutChatButton() {
+        var $popOutButton = $("<div style='cursor: pointer; position: absolute; top: 0.9em; right: 25em; z-index: 9999'>Pop Out</div>");
+
+        $popOutButton.click(function() {
+            var chatWindow = window.open("","ExpandedWindow","height=800,width=400,status=no,toolbar=no,menubar=no,location=no", false);
+            //var $chat = $("#chat");
+            var $chat = $(".right_section");
+            //$("link, style, script").each(function() {
+            //   $(chatWindow.document.head).append($(this).clone());
+            //});
+
+            $(chatWindow.document.body).append($chat);
+            $(chatWindow).unload(function() {
+                //$(".right_section").append($chat);
+                $("#main-room").append($chat);
+            });
+        });
+
+        $(document.body).append($popOutButton);
     }
 
     /**

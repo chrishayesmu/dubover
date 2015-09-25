@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name       dubover
 // @namespace  https://github.com/chrishayesmu/dubover
-// @version    0.3.2
+// @version    0.4
 // @description Provides UI enhancements for dubtrack.fm
 // @match      https://www.dubtrack.fm/*
 // @copyright  2015+, Chris Hayes
@@ -54,6 +54,7 @@
         createSettingsMenu();
         moveUserList();
         observeForImagesInChat();
+        replaceDubsWithUsernames();
         setDisplayOfVideoChat();
         setDisplayOfVideoComments();
 
@@ -108,6 +109,19 @@
         }
     }
 
+    function replaceDubsWithUsernames() {
+        if (settings.ReplaceDubsWithUsernames) {
+            injectCssInHead("\
+            ul.avatar-list li p.username {\
+                display: block;\
+            }\
+            ul.avatar-list li p.dubs {\
+                display: none\
+            }\
+            ");
+        }
+    }
+    
     /**
      * Toggles visibility of the video chat element.
      */

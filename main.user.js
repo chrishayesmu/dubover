@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name       dubover
 // @namespace  https://github.com/chrishayesmu/dubover
-// @version    0.5
+// @version    0.6
 // @description Provides UI enhancements for dubtrack.fm
 // @match       https://www.dubtrack.fm/*
 // @copyright   2015+, Chris Hayes
@@ -32,9 +32,12 @@
      * Injects a CSS style element at the head of the document.
      *
      * @param {string} css - A valid CSS stylesheet to insert.
+     * @param {DOMNode} _document - Optional. The window document to insert into.
      */
-    window.injectCssInHead = function(css) {
-        $("<style type='text/css'></style>").html(css).appendTo(document.head);
+    window.injectCssInHead = function(css, _document) {
+        _document = _document || window.document;
+        
+        $("<style type='text/css'></style>").html(css).appendTo(_document.head);
     }
 
     /**************************************************
@@ -53,6 +56,7 @@
         $toggleVideoChatElement = $("#dubtrack-video-realtime .toggle_videos");
         $videoCommentsElement = $("#room-comments");
 
+        createPopOutChatButton();
         createSettingsMenu();
         improveChatTimestampOpacity();
         moveUserList();
@@ -62,7 +66,6 @@
         setDisplayModeOfChatTimestamps();
         setDisplayOfVideoChat();
         setDisplayOfVideoComments();
-        createPopOutChatButton();
         createPlugJSONImporterButton();
 
         console.log("dubover initialization is complete.");
@@ -122,6 +125,85 @@
         });
     }
 
+    /**
+     * Creates a button that pops out chat into a separate window when clicked.
+     */
+    function createPopOutChatButton() {
+        executeWhenSelectorMatched(".chat_tools", function($chatTools) {
+            var $popOutButton = $("<div id='duboverPopOutChatButton'>Pop out</div>");
+            var popOutCss = GM_getResourceText("ChatPopOutCss");
+            injectCssInHead(popOutCss);
+
+            $popOutButton.click(function() {
+                $popOutButton.hide();
+                
+                // Open the new window and copy things from the original window
+                var chatWindow = window.open("","ExpandedWindow","height=800,width=400,status=no,toolbar=no,menubar=no,location=no", false);
+                chatWindow.document.title = document.title;
+                console.log(chatWindow);
+                
+                // Inject this as its own CSS to avoid the complexity of undoing it later
+                injectCssInHead("#chat {\
+                display: block;\
+                position: static;\
+                }", chatWindow.document);
+                
+                var $chat = $("#chat");
+                var $chatMessages = $chat.find(".chat-messages");
+                var originalChatHeight = $chatMessages.css("height");
+
+                // dubtrack has a resize handler that styles the chat div via manual height calculation.
+                // We run our own handler after theirs and remove their changes.            
+                var resizeHandler = function() {
+                    $chatMessages.css("height", "calc(100% - 6.6em)");
+                };
+                
+                $(window).resize(resizeHandler);
+                
+                // Copy all of the CSS from the original window to the new one
+                $("link, style").each(function() {
+                    var $copy = $(this).clone();
+                    
+                    // Some links use the // protocol indicator, which tells the page to load the
+                    // resource using the same protocol the page was loaded with. Since our new window
+                    // wasn't loaded with anything, these links will break. Referencing the attribute in
+                    // code automatically attached the protocol, so we set the value to itself in order to
+                    // get this explicit protocol into the node itself, which lets it load properly.
+                    $copy.prop("href", $copy.prop("href"));
+                    
+                    $(chatWindow.document.head).append($copy);
+                });
+
+                // Apply special styling to handle the new display conditions
+                $chat.css("display", "block");
+                $chat.find(".room-user-counter").css("display", "block");
+                $chatMessages.css("height", "calc(100% - 6.6em)");
+                
+                // Recreate the main-room element because of CSS rules that rely on it being there
+                var $mainRoom = $("<section id='main-room' style='display: block; margin: 0; max-width: 100%'></section>");
+                $mainRoom.append($chat);
+                $(chatWindow.document.body).append($mainRoom);
+                
+                // Restore everything to its original state when the window is closed
+                $(chatWindow).unload(function() {
+                    $(window).off("resize", resizeHandler);
+                    $(".right_section").append($chat);
+                    $chat.css("display", "");
+                    $chat.find(".room-user-counter").css("display", "");
+                    $chatMessages.css("height", originalChatHeight);
+                    $popOutButton.show();
+                });
+                
+                // If the user closes dubtrack, close this window as well
+                $(window).unload(function() {
+                    chatWindow.close();
+                });
+            });
+            
+            $chatTools.append($popOutButton);
+        });
+    }
+    
     /**
      * Executes the given callback the first time a DOM element is found matching
      * the selector given. Elements are checked for periodically. Once found, the

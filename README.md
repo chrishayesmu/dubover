@@ -4,6 +4,7 @@ dubover is a GreaseMonkey- and TamperMonkey-compatible userscript. It provides v
 
 Some of the available functionality includes:
 
+* Popping chat out into a separate window from the rest of dubtrack
 * Preventing images from auto-loading in the chat box
 * Hiding the comment box which appears under YouTube videos
 * Hiding the video chat options altogether

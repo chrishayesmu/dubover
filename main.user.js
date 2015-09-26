@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name       dubover
 // @namespace  https://github.com/chrishayesmu/dubover
-// @version    0.6
+// @version    0.6.1
 // @description Provides UI enhancements for dubtrack.fm
 // @match       https://www.dubtrack.fm/*
 // @copyright   2015+, Chris Hayes
@@ -249,7 +249,11 @@
         var abbrevYear = dateAsString.substring(dateAsString.length - 2, dateAsString.length);
         
         var hoursIn24HourClock = date.getHours();
-        var hoursIn12HourClock = hoursIn24HourClock > 11 ? hoursIn24HourClock - 11 : hoursIn24HourClock + 1;
+        var hoursIn12HourClock = hoursIn24HourClock > 12 ? hoursIn24HourClock - 12 : hoursIn24HourClock;
+        if (hoursIn12HourClock === 0) {
+            hoursIn12HourClock = 12;
+        }
+
         var minutes = date.getMinutes();
         var seconds = date.getSeconds();
         

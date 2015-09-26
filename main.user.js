@@ -8,6 +8,7 @@
 // @run-at      document-end
 // @require     https://code.jquery.com/jquery-2.1.4.min.js
 // @require     js/settings.js
+// @require     js/plugJSONImporter.js
 // @resource    ChatPopOutCss css/chatPopOut.css
 // @resource    SettingsMenuCss css/settingsMenu.css
 // @resource    SettingsMenuTemplate html/settingsMenu.html
@@ -68,7 +69,7 @@
         setDisplayOfVideoChat();
         setDisplayOfVideoComments();
         createPlugJSONImporterButton();
-        
+
         console.log("dubover initialization is complete.");
     }
 
@@ -277,7 +278,7 @@
             });
         }
     }
-    
+
     /**
      * Sets up an observer which watches chat for incoming images,
      * and replaces them with plain links if configured to do so.

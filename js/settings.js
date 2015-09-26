@@ -87,7 +87,7 @@
      * Creates the settings menu and applies event handlers to its elements.
      */
     window.createSettingsMenu = function() {
-        var $menuTitle = $("<div style='cursor: pointer; position: absolute; top: 0.9em; right: 13em; z-index: 9999'>dubover settings</div>");
+        var $menuTitle = $("<div style='cursor: pointer; position: absolute; top: 0.9em; right: 13em; text-transform: none; z-index: 9999'>dubover settings</div>");
 
         var menuCss = GM_getResourceText("SettingsMenuCss");
         var menuHtml = GM_getResourceText("SettingsMenuTemplate");
@@ -106,7 +106,7 @@
         $cancelButton.click(cancelSettings);
 
         $(document.body).append($menu);
-        $(document.body).append($menuTitle);
+        $("#header-global").append($menuTitle);
         cancelSettings(); // applies settings from localstorage
     };
 

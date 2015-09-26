@@ -1,17 +1,19 @@
 // ==UserScript==
-// @name       dubover
-// @namespace  https://github.com/chrishayesmu/dubover
-// @version    0.6.1
+// @name        dubover
+// @namespace   https://github.com/chrishayesmu/dubover
+// @version     0.6.1
 // @description Provides UI enhancements for dubtrack.fm
 // @match       https://www.dubtrack.fm/*
 // @copyright   2015+, Chris Hayes
 // @run-at      document-end
-// @grant       GM_xmlhttpRequest
 // @require     https://code.jquery.com/jquery-2.1.4.min.js
 // @require     js/settings.js
 // @require     js/plugJSONImporter.js
+// @resource    ChatPopOutCss css/chatPopOut.css
 // @resource    SettingsMenuCss css/settingsMenu.css
 // @resource    SettingsMenuTemplate html/settingsMenu.html
+// @grant       GM_getResourceText
+// @grant       GM_xmlhttpRequest
 // @downloadURL https://rawgit.com/chrishayesmu/dubover/master/main.user.js
 // ==/UserScript==
 
@@ -87,41 +89,6 @@
 
             $importerButton.click(importFromPlugJSON);
             $mainMenu.append($importerButton);
-        });
-    }
-
-    /**
-     * Injects a button to trigger pop out chat
-     * TODO: Fix styling
-     */
-    function createPopOutChatButton() {
-        executeWhenSelectorMatched(".chat_tools", function($chatTools) {
-            var $popOutButton = $("<span>Pop Out</span>");
-            $popOutButton.css({
-                height: "",
-                marginTop: "1.5em",
-                maxHeight: "18em",
-                paddingLeft: "1.5em",
-                overflowY: "auto"
-            });
-
-            $popOutButton.click(function() {
-                var chatWindow = window.open("","ExpandedWindow","height=800,width=400,status=no,toolbar=no,menubar=no,location=no", false);
-                var $chat = $("#chat");
-                $popOutButton.toggle();
-
-                //$("link, style, script").each(function() {
-                //   $(chatWindow.document.head).append($(this).clone());
-                //});
-
-                $(chatWindow.document.body).append($chat);
-                $(chatWindow).unload(function() {
-                    $(".right_section").append($chat);
-                    $popOutButton.toggle();
-                });
-            });
-
-            //$($chatTools).append($popOutButton); //TODO: Reimplement once styling is fixed
         });
     }
 
@@ -311,7 +278,7 @@
             });
         }
     }
-    
+
     /**
      * Sets up an observer which watches chat for incoming images,
      * and replaces them with plain links if configured to do so.

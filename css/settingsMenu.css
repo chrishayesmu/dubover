@@ -5,8 +5,8 @@
     padding: 0.5em;
     z-index: 9999;
 
-    height: 8em;
-    width: 25em;
+    height: 14em;
+    width: 30em;
 
     margin: auto;
     position: absolute;
@@ -16,8 +16,17 @@
     right: 0;
 }
 
+#duboverSettingsMenu .helpLink {
+    color: lightblue;
+    cursor: pointer;
+    display: inline-block;
+    font-size: 0.8em;
+    margin-left: 0.75em;
+    text-decoration: underline;
+}
+
 #duboverSettingsMenuApplyButton {
-    width: 11.5em;
+    width: 13.5em;
 
     position: absolute;
     bottom: 0.5em;
@@ -25,7 +34,7 @@
 }
 
 #duboverSettingsMenuCancelButton {
-    width: 11.5em;
+    width: 13.5em;
 
     position: absolute;
     bottom: 0.5em;

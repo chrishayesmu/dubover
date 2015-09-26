@@ -1,7 +1,7 @@
 // ==UserScript==
-// @name        dubover
-// @namespace   https://github.com/chrishayesmu/dubover
-// @version     0.4
+// @name       dubover
+// @namespace  https://github.com/chrishayesmu/dubover
+// @version    0.5
 // @description Provides UI enhancements for dubtrack.fm
 // @match       https://www.dubtrack.fm/*
 // @copyright   2015+, Chris Hayes
@@ -20,6 +20,7 @@
     var $toggleVideoChatElement;
     var $videoCommentsElement;
 
+    var chatTimestampObserver;
     var imagesInChatObserver;
     var settings;
 
@@ -53,9 +54,12 @@
         $videoCommentsElement = $("#room-comments");
 
         createSettingsMenu();
+        improveChatTimestampOpacity();
         moveUserList();
         observeForImagesInChat();
+        observeForTimestampsInChat();
         replaceDubsWithUsernames();
+        setDisplayModeOfChatTimestamps();
         setDisplayOfVideoChat();
         setDisplayOfVideoComments();
         createPopOutChatButton();
@@ -145,6 +149,62 @@
     }
 
     /**
+     * Formats a date object according to a format string.
+     *
+     * @param {date} date - A date which needs formatting.
+     * @param {string} format - A format string to apply during formatting.
+     * @returns {string} The date in the format given.
+     */
+    function formatDate(date, format) {
+        var dateAsString = date.toDateString();
+        
+        var day = date.getDay();
+        var month = date.getMonth();
+        var year = 1900 + date.getYear(); // JS dates start with year 0 at 1900
+        
+        var abbrevDay = dateAsString.substring(0, 3);
+        var abbrevMonth = dateAsString.substring(4, 7);
+        var abbrevYear = dateAsString.substring(dateAsString.length - 2, dateAsString.length);
+        
+        var hoursIn24HourClock = date.getHours();
+        var hoursIn12HourClock = hoursIn24HourClock > 11 ? hoursIn24HourClock - 11 : hoursIn24HourClock + 1;
+        var minutes = date.getMinutes();
+        var seconds = date.getSeconds();
+        
+        var amPmDesignator = hoursIn24HourClock < 12 ? "AM" : "PM";
+        
+        // Replace all possible placeholders in such an order that the longest subsequence is replaced first always
+        return format.replace("ddd", abbrevDay)
+                     .replace("dd", padLeft(day, 0, 2))
+                     .replace("d", day)
+                     .replace("MMM", abbrevMonth)
+                     .replace("MM", padLeft(month, 0, 2))
+                     .replace("M", month)
+                     .replace("yyyy", year)
+                     .replace("yy", abbrevYear)
+                     .replace("hh", padLeft(hoursIn12HourClock, 0, 2))
+                     .replace("h", hoursIn12HourClock)
+                     .replace("HH", padLeft(hoursIn24HourClock, 0, 2))
+                     .replace("H", hoursIn24HourClock)
+                     .replace("mm", padLeft(minutes, 0, 2))
+                     .replace("m", minutes)
+                     .replace("ss", padLeft(seconds, 0, 2))
+                     .replace("s", seconds)
+                     .replace("tt", amPmDesignator);
+    }
+    
+    /**
+     * Changes the opacity of chat timestamps to make them much easier to read.
+     */
+    function improveChatTimestampOpacity() {
+        injectCssInHead("\
+            #chat .chat-container ul.chat-main li .activity-row .meta-info {\
+                opacity: 0.7\
+            }\
+        ");
+    }
+    
+    /**
      * Moves the list of users in the room to be underneath the active video.
      */
     function moveUserList() {
@@ -165,34 +225,7 @@
             });
         }
     }
-
-    function replaceDubsWithUsernames() {
-        if (settings.ReplaceDubsWithUsernames) {
-            injectCssInHead("\
-            ul.avatar-list li p.username {\
-                display: block;\
-            }\
-            ul.avatar-list li p.dubs {\
-                display: none\
-            }\
-            ");
-        }
-    }
-
-    /**
-     * Toggles visibility of the video chat element.
-     */
-    function setDisplayOfVideoChat() {
-        $toggleVideoChatElement.toggle(!settings.HideVideoChat);
-    }
-
-    /**
-     * Toggles visibility of the video comments element.
-     */
-    function setDisplayOfVideoComments() {
-        $videoCommentsElement.toggle(!settings.HideVideoComments);
-    }
-
+    
     /**
      * Sets up an observer which watches chat for incoming images,
      * and replaces them with plain links if configured to do so.
@@ -225,6 +258,101 @@
 
         var chatDiv = document.getElementById("chat");
         imagesInChatObserver.observe(chatDiv, { childList: true, subtree: true });
+    }
+    
+    /**
+     * Watches the chat for incoming messages and overwrites the default timestamp
+     * with a user-configured version. Also prevents dubtrack's automatic relative-time-update
+     * process from rewriting the timestamp in the relatve time format.
+     */
+    function observeForTimestampsInChat() {
+        if (chatTimestampObserver != null) {
+            return;
+        }
+        
+        chatTimestampObserver = new MutationObserver(function(mutations) {
+            if (settings.DateFormatString) {
+                mutations.forEach(function(mutation) {
+                    if (mutation.target.classList.contains("timeago")) {
+                        var $item = $(mutation.target);
+                        var date = new Date($item.attr("datetime"));
+                        var formattedDate = formatDate(date, settings.DateFormatString);
+                        mutation.target.innerText = formattedDate;
+                    }
+                });
+            }
+        });
+
+        var chatDiv = document.getElementById("chat");
+        chatTimestampObserver.observe(chatDiv, { childList: true, subtree: true });
+    }
+    
+    /**
+     * Pads the provided string on the left using the given padding string to the specified length.
+     *
+     * @param {string} str - The string that needs to be padded.
+     * @param {string} paddingStr - The string to pad with.
+     * @param {integer} length - How long the output string should be. If the paddingStr is more
+     *                           than 1 character long, the output string may be longer than this.
+     * @returns {string} A string padded on the left as specified.
+     */
+    function padLeft(str, paddingStr, length) {
+        if (paddingStr.length === 0) {
+            throw new Error("paddingStr must be at least 1 character long");
+        }
+    
+        str = String(str);
+        var numCharsToAdd = length - str.length;
+        var ret = "";
+        
+        for (var i = 0; i < numCharsToAdd; i++) {
+            ret = paddingStr + ret;
+        }
+        
+        return ret + str;
+    }
+    
+    /**
+     * Swaps the dub count which is normally under a user's avatar with their username.
+     */
+    function replaceDubsWithUsernames() {
+        if (settings.ReplaceDubsWithUsernames) {
+            injectCssInHead("\
+            ul.avatar-list li p.username {\
+                display: block;\
+            }\
+            ul.avatar-list li p.dubs {\
+                display: none\
+            }\
+            ");
+        }
+    }
+    
+    /**
+     * Toggles visibility of the video chat element.
+     */
+    function setDisplayOfVideoChat() {
+        $toggleVideoChatElement.toggle(!settings.HideVideoChat);
+    }
+
+    /**
+     * Toggles visibility of the video comments element.
+     */
+    function setDisplayOfVideoComments() {
+        $videoCommentsElement.toggle(!settings.HideVideoComments);
+    }
+
+    /**
+     * Toggles visibility of chat timestamps when chat isn't being hovered over.
+     */
+    function setDisplayModeOfChatTimestamps() {
+        if (settings.AlwaysShowChatTimestamps) {
+            injectCssInHead("\
+            #chat .chat-container ul.chat-main li .activity-row .meta-info {\
+                display: block\
+            }\
+            ");
+        }
     }
 
     /**************************************************

@@ -9,3 +9,5 @@ Some of the available functionality includes:
 * Hiding the video chat options altogether
 * Moving the list of users in the room from a separate tab to beneath the video
 * Showing usernames instead of dub counts in the list of users
+* Customizable formatting of chat timestamps
+* Improved visibility of chat timestamps, as well as the ability to show timestamps all the time and not just on hover

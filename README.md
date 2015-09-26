@@ -14,4 +14,4 @@ Some of the available functionality includes:
 
 # How to use
 
-Just install [Greasemonkey (Firefox)](https://addons.mozilla.org/en-us/firefox/addon/greasemonkey/) or [Tampermonkey (Chrome)](https://chrome.google.com/webstore/detail/tampermonkey/dhdgffkkebhmkfjojejmpbldmpobfkfo?hl=en), then [click this link}(https://rawgit.com/chrishayesmu/dubover/master/main.user.js) or visit the following URL: https://rawgit.com/chrishayesmu/dubover/master/main.user.js
+Just install [Greasemonkey (Firefox)](https://addons.mozilla.org/en-us/firefox/addon/greasemonkey/) or [Tampermonkey (Chrome)](https://chrome.google.com/webstore/detail/tampermonkey/dhdgffkkebhmkfjojejmpbldmpobfkfo?hl=en), then [click this link](https://rawgit.com/chrishayesmu/dubover/master/main.user.js) or visit the following URL: https://rawgit.com/chrishayesmu/dubover/master/main.user.js

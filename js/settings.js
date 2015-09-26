@@ -8,6 +8,8 @@
     // Default values for all settings. Only settings which have
     // an entry in this object will be saved in localStorage.
     var defaultSettings = {
+        AlwaysShowChatTimestamps: true,
+        DateFormatString: "h:mm tt",
         HideImagesInChat: true,
         HideVideoChat: false,
         HideVideoComments: true,
@@ -33,6 +35,9 @@
             switch (inputType) {
                 case "checkbox":
                     settingsValue = $element.prop("checked");
+                    break;
+                case "text":
+                    settingsValue = $element.val();
                     break;
                 default:
                     settingsValue = $element.val();
@@ -65,6 +70,9 @@
             switch (inputType) {
                 case "checkbox":
                     $element.prop("checked", !!settingsValue);
+                    break;
+                case "text":
+                    $element.val(settingsValue);
                     break;
                 default:
                     console.log("Didn't know how to handle input of type " + inputType);

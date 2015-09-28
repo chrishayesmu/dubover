@@ -3,15 +3,17 @@
 // @namespace  https://github.com/chrishayesmu/dubover
 // @version    0.6.2
 // @description Provides UI enhancements for dubtrack.fm
-// @match      https://www.dubtrack.fm/*
-// @copyright  2015+, Chris Hayes
-// @run-at     document-end
-// @require https://code.jquery.com/jquery-2.1.4.min.js
-// @require js/settings.js
-// @resource ChatPopOutCss css/chatPopOut.css
-// @resource SettingsMenuCss css/settingsMenu.css
-// @resource SettingsMenuTemplate html/settingsMenu.html
-// @grant GM_getResourceText
+// @match       https://www.dubtrack.fm/*
+// @copyright   2015+, Chris Hayes
+// @run-at      document-end
+// @require     https://code.jquery.com/jquery-2.1.4.min.js
+// @require     js/settings.js
+// @require     js/plugJSONImporter.js
+// @resource    ChatPopOutCss css/chatPopOut.css
+// @resource    SettingsMenuCss css/settingsMenu.css
+// @resource    SettingsMenuTemplate html/settingsMenu.html
+// @grant       GM_getResourceText
+// @grant       GM_xmlhttpRequest
 // @downloadURL https://rawgit.com/chrishayesmu/dubover/master/main.user.js
 // ==/UserScript==
 
@@ -66,8 +68,28 @@
         setDisplayModeOfChatTimestamps();
         setDisplayOfVideoChat();
         setDisplayOfVideoComments();
-        
+        createPlugJSONImporterButton();
+
         console.log("dubover initialization is complete.");
+    }
+
+    /**
+     * Injects a button to trigger the plug JSON importer
+     */
+    function createPlugJSONImporterButton() {
+        executeWhenSelectorMatched(".main-menu", function($mainMenu) {
+            var $importerButton = $("<li><span>Import JSON</span></li>");
+            $importerButton.css({
+                height: "",
+                marginTop: "0.85em",
+                maxHeight: "18em",
+                paddingLeft: "0.4em",
+                overflowY: "auto"
+            });
+
+            $importerButton.click(importFromPlugJSON);
+            $mainMenu.append($importerButton);
+        });
     }
 
     /**

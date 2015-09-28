@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name       dubover
 // @namespace  https://github.com/chrishayesmu/dubover
-// @version    0.6.1
+// @version    0.6.2
 // @description Provides UI enhancements for dubtrack.fm
 // @match      https://www.dubtrack.fm/*
 // @copyright  2015+, Chris Hayes
@@ -308,7 +308,10 @@
                         var $item = $(mutation.target);
                         var date = new Date($item.attr("datetime"));
                         var formattedDate = formatDate(date, settings.DateFormatString);
-                        mutation.target.innerText = formattedDate;
+
+                        if ($item.text() !== formattedDate) {
+                            $item.text(formattedDate);
+                        }
                     }
                 });
             }

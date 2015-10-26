@@ -102,7 +102,7 @@
                 };
                 
                 $(window).resize(resizeHandler);
-                console.log("new window", chatWindow);
+                
                 // Copy all of the CSS from the original window to the new one
                 $("link, style").each(function() {
                     var $copy = $(this).clone();
@@ -289,7 +289,6 @@
         chatTimestampObserver = new MutationObserver(function(mutations) {
             if (settings.DateFormatString) {
                 mutations.forEach(function(mutation) {
-					console.log("mutation: ", mutation);
                     if (mutation.target.classList.contains("timeago")) {
                         var $item = $(mutation.target);
                         var date = new Date($item.attr("datetime"));

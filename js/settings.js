@@ -10,11 +10,7 @@
     var defaultSettings = {
         AlwaysShowChatTimestamps: true,
         DateFormatString: "h:mm tt",
-        HideImagesInChat: true,
-        HideVideoChat: false,
-        HideVideoComments: true,
-        MoveUsersSectionUnderVideo: true,
-        ReplaceDubsWithUsernames: true
+        HideImagesInChat: true
     };
 
     var $menu;

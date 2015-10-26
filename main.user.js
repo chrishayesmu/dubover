@@ -11,6 +11,7 @@
 // @resource ChatPopOutCss css/chatPopOut.css
 // @resource SettingsMenuCss css/settingsMenu.css
 // @resource SettingsMenuTemplate html/settingsMenu.html
+// @grant unsafeWindow
 // @grant GM_getResourceText
 // @downloadURL https://rawgit.com/chrishayesmu/dubover/master/main.user.js
 // ==/UserScript==
@@ -33,9 +34,10 @@
      *
      * @param {string} css - A valid CSS stylesheet to insert.
      * @param {DOMNode} _document - Optional. The window document to insert into.
+     *                              If not provided, unsafeWindow.document is assumed.
      */
     window.injectCssInHead = function(css, _document) {
-        _document = _document || window.document;
+        _document = _document || unsafeWindow.document;
         
         $("<style type='text/css'></style>").html(css).appendTo(_document.head);
     }
@@ -56,16 +58,12 @@
         $toggleVideoChatElement = $("#dubtrack-video-realtime .toggle_videos");
         $videoCommentsElement = $("#room-comments");
 
-        createPopOutChatButton();
+        //createPopOutChatButton();
         createSettingsMenu();
         improveChatTimestampOpacity();
-        moveUserList();
         observeForImagesInChat();
         observeForTimestampsInChat();
-        replaceDubsWithUsernames();
         setDisplayModeOfChatTimestamps();
-        setDisplayOfVideoChat();
-        setDisplayOfVideoComments();
         
         console.log("dubover initialization is complete.");
     }
@@ -83,9 +81,8 @@
                 $popOutButton.hide();
                 
                 // Open the new window and copy things from the original window
-                var chatWindow = window.open("","ExpandedWindow","height=800,width=400,status=no,toolbar=no,menubar=no,location=no", false);
-                chatWindow.document.title = document.title;
-                console.log(chatWindow);
+                var chatWindow = unsafeWindow.open("","dubtrackpopout","height=800,width=400,status=no,toolbar=no,menubar=no,location=no,titlebar=no");
+                chatWindow.document.title = unsafeWindow.document.title;
                 
                 // Inject this as its own CSS to avoid the complexity of undoing it later
                 injectCssInHead("#chat {\
@@ -100,11 +97,12 @@
                 // dubtrack has a resize handler that styles the chat div via manual height calculation.
                 // We run our own handler after theirs and remove their changes.            
                 var resizeHandler = function() {
+                    console.log("resizing");
                     $chatMessages.css("height", "calc(100% - 6.6em)");
                 };
                 
                 $(window).resize(resizeHandler);
-                
+                console.log("new window", chatWindow);
                 // Copy all of the CSS from the original window to the new one
                 $("link, style").each(function() {
                     var $copy = $(this).clone();
@@ -129,19 +127,28 @@
                 $mainRoom.append($chat);
                 $(chatWindow.document.body).append($mainRoom);
                 
+                var $rightSection = $(".right_section");
+                
                 // Restore everything to its original state when the window is closed
-                $(chatWindow).unload(function() {
-                    $(window).off("resize", resizeHandler);
-                    $(".right_section").append($chat);
+                //$(chatWindow).on("beforeunload", function() {
+                chatWindow.onbeforeunload = function() {
+                    console.log("chat window unloading");
+                    //$(unsafeWindow).off("resize", resizeHandler);
+                    $rightSection.append($chat);
                     $chat.css("display", "");
                     $chat.find(".room-user-counter").css("display", "");
                     $chatMessages.css("height", originalChatHeight);
                     $popOutButton.show();
-                });
+                    chatWindow = null;
+                };
+                
+                $(chatWindow.document).ready(function() { console.log("load done"); });
                 
                 // If the user closes dubtrack, close this window as well
-                $(window).unload(function() {
-                    chatWindow.close();
+                $(unsafeWindow).unload(function() {
+                    if (chatWindow) {
+                        chatWindow.close();
+                    }
                 });
             });
             
@@ -236,28 +243,6 @@
     }
     
     /**
-     * Moves the list of users in the room to be underneath the active video.
-     */
-    function moveUserList() {
-        if (settings.MoveUsersSectionUnderVideo) {
-            executeWhenSelectorMatched("#main-user-list-room", function($userList) {
-                var $leftSection = $("section.left_section");
-                var $userSection = $("<section></section>");
-                $userList.appendTo($userSection);
-                $userSection.appendTo($leftSection);
-
-                $userList.css({
-                    height: "",
-                    marginTop: "1.5em",
-                    maxHeight: "18em",
-                    paddingLeft: "0.4em",
-                    overflowY: "auto"
-                });
-            });
-        }
-    }
-    
-    /**
      * Sets up an observer which watches chat for incoming images,
      * and replaces them with plain links if configured to do so.
      */
@@ -287,7 +272,7 @@
             }
         });
 
-        var chatDiv = document.getElementById("chat");
+        var chatDiv = unsafeWindow.document.getElementById("chat");
         imagesInChatObserver.observe(chatDiv, { childList: true, subtree: true });
     }
     
@@ -300,10 +285,11 @@
         if (chatTimestampObserver != null) {
             return;
         }
-        
+		
         chatTimestampObserver = new MutationObserver(function(mutations) {
             if (settings.DateFormatString) {
                 mutations.forEach(function(mutation) {
+					console.log("mutation: ", mutation);
                     if (mutation.target.classList.contains("timeago")) {
                         var $item = $(mutation.target);
                         var date = new Date($item.attr("datetime"));
@@ -317,7 +303,7 @@
             }
         });
 
-        var chatDiv = document.getElementById("chat");
+        var chatDiv = unsafeWindow.document.getElementById("chat");
         chatTimestampObserver.observe(chatDiv, { childList: true, subtree: true });
     }
     
@@ -347,44 +333,14 @@
     }
     
     /**
-     * Swaps the dub count which is normally under a user's avatar with their username.
-     */
-    function replaceDubsWithUsernames() {
-        if (settings.ReplaceDubsWithUsernames) {
-            injectCssInHead("\
-            ul.avatar-list li p.username {\
-                display: block;\
-            }\
-            ul.avatar-list li p.dubs {\
-                display: none\
-            }\
-            ");
-        }
-    }
-    
-    /**
-     * Toggles visibility of the video chat element.
-     */
-    function setDisplayOfVideoChat() {
-        $toggleVideoChatElement.toggle(!settings.HideVideoChat);
-    }
-
-    /**
-     * Toggles visibility of the video comments element.
-     */
-    function setDisplayOfVideoComments() {
-        $videoCommentsElement.toggle(!settings.HideVideoComments);
-    }
-
-    /**
      * Toggles visibility of chat timestamps when chat isn't being hovered over.
      */
     function setDisplayModeOfChatTimestamps() {
         if (settings.AlwaysShowChatTimestamps) {
             injectCssInHead("\
-            #chat .chat-container ul.chat-main li .activity-row .meta-info {\
-                display: block\
-            }\
+			#chat .chat-container .chat-messages .chat-main li .meta-info .timeinfo {\
+				display: inline;\
+			}\
             ");
         }
     }

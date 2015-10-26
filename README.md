@@ -13,6 +13,8 @@ Some of the available functionality includes:
 * Customizable formatting of chat timestamps
 * Improved visibility of chat timestamps, as well as the ability to show timestamps all the time and not just on hover
 
+(Following the complete redesign of Dubtrack's UI, some of these features may not be available.)
+
 # How to use
 
 Just install [Greasemonkey (Firefox)](https://addons.mozilla.org/en-us/firefox/addon/greasemonkey/) or [Tampermonkey (Chrome)](https://chrome.google.com/webstore/detail/tampermonkey/dhdgffkkebhmkfjojejmpbldmpobfkfo?hl=en), then [click this link](https://rawgit.com/chrishayesmu/dubover/master/main.user.js) or visit the following URL: https://rawgit.com/chrishayesmu/dubover/master/main.user.js

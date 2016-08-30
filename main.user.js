@@ -38,7 +38,7 @@
      */
     window.injectCssInHead = function(css, _document) {
         _document = _document || unsafeWindow.document;
-        
+
         $("<style type='text/css'></style>").html(css).appendTo(_document.head);
     }
 
@@ -64,7 +64,7 @@
         observeForImagesInChat();
         observeForTimestampsInChat();
         setDisplayModeOfChatTimestamps();
-        
+
         console.log("dubover initialization is complete.");
     }
 
@@ -79,41 +79,41 @@
 
             $popOutButton.click(function() {
                 $popOutButton.hide();
-                
+
                 // Open the new window and copy things from the original window
                 var chatWindow = unsafeWindow.open("","dubtrackpopout","height=800,width=400,status=no,toolbar=no,menubar=no,location=no,titlebar=no");
                 chatWindow.document.title = unsafeWindow.document.title;
-                
+
                 // Inject this as its own CSS to avoid the complexity of undoing it later
                 injectCssInHead("#chat {\
                 display: block;\
                 position: static;\
                 }", chatWindow.document);
-                
+
                 var $chat = $("#chat");
                 var $chatMessages = $chat.find(".chat-messages");
                 var originalChatHeight = $chatMessages.css("height");
 
                 // dubtrack has a resize handler that styles the chat div via manual height calculation.
-                // We run our own handler after theirs and remove their changes.            
+                // We run our own handler after theirs and remove their changes.
                 var resizeHandler = function() {
                     console.log("resizing");
                     $chatMessages.css("height", "calc(100% - 6.6em)");
                 };
-                
+
                 $(window).resize(resizeHandler);
-                
+
                 // Copy all of the CSS from the original window to the new one
                 $("link, style").each(function() {
                     var $copy = $(this).clone();
-                    
+
                     // Some links use the // protocol indicator, which tells the page to load the
                     // resource using the same protocol the page was loaded with. Since our new window
                     // wasn't loaded with anything, these links will break. Referencing the attribute in
                     // code automatically attached the protocol, so we set the value to itself in order to
                     // get this explicit protocol into the node itself, which lets it load properly.
                     $copy.prop("href", $copy.prop("href"));
-                    
+
                     $(chatWindow.document.head).append($copy);
                 });
 
@@ -121,14 +121,14 @@
                 $chat.css("display", "block");
                 $chat.find(".room-user-counter").css("display", "block");
                 $chatMessages.css("height", "calc(100% - 6.6em)");
-                
+
                 // Recreate the main-room element because of CSS rules that rely on it being there
                 var $mainRoom = $("<section id='main-room' style='display: block; margin: 0; max-width: 100%'></section>");
                 $mainRoom.append($chat);
                 $(chatWindow.document.body).append($mainRoom);
-                
+
                 var $rightSection = $(".right_section");
-                
+
                 // Restore everything to its original state when the window is closed
                 //$(chatWindow).on("beforeunload", function() {
                 chatWindow.onbeforeunload = function() {
@@ -141,9 +141,9 @@
                     $popOutButton.show();
                     chatWindow = null;
                 };
-                
+
                 $(chatWindow.document).ready(function() { console.log("load done"); });
-                
+
                 // If the user closes dubtrack, close this window as well
                 $(unsafeWindow).unload(function() {
                     if (chatWindow) {
@@ -151,11 +151,11 @@
                     }
                 });
             });
-            
+
             $chatTools.append($popOutButton);
         });
     }
-    
+
     /**
      * Executes the given callback the first time a DOM element is found matching
      * the selector given. Elements are checked for periodically. Once found, the
@@ -191,15 +191,15 @@
      */
     function formatDate(date, format) {
         var dateAsString = date.toDateString();
-        
+
         var day = date.getDay();
         var month = date.getMonth();
         var year = 1900 + date.getYear(); // JS dates start with year 0 at 1900
-        
+
         var abbrevDay = dateAsString.substring(0, 3);
         var abbrevMonth = dateAsString.substring(4, 7);
         var abbrevYear = dateAsString.substring(dateAsString.length - 2, dateAsString.length);
-        
+
         var hoursIn24HourClock = date.getHours();
         var hoursIn12HourClock = hoursIn24HourClock > 12 ? hoursIn24HourClock - 12 : hoursIn24HourClock;
         if (hoursIn12HourClock === 0) {
@@ -208,9 +208,9 @@
 
         var minutes = date.getMinutes();
         var seconds = date.getSeconds();
-        
+
         var amPmDesignator = hoursIn24HourClock < 12 ? "AM" : "PM";
-        
+
         // Replace all possible placeholders in such an order that the longest subsequence is replaced first always
         return format.replace("ddd", abbrevDay)
                      .replace("dd", padLeft(day, 0, 2))
@@ -230,7 +230,7 @@
                      .replace("s", seconds)
                      .replace("tt", amPmDesignator);
     }
-    
+
     /**
      * Changes the opacity of chat timestamps to make them much easier to read.
      */
@@ -241,7 +241,7 @@
             }\
         ");
     }
-    
+
     /**
      * Sets up an observer which watches chat for incoming images,
      * and replaces them with plain links if configured to do so.
@@ -275,7 +275,7 @@
         var chatDiv = unsafeWindow.document.getElementById("chat");
         imagesInChatObserver.observe(chatDiv, { childList: true, subtree: true });
     }
-    
+
     /**
      * Watches the chat for incoming messages and overwrites the default timestamp
      * with a user-configured version. Also prevents dubtrack's automatic relative-time-update
@@ -285,7 +285,7 @@
         if (chatTimestampObserver != null) {
             return;
         }
-		
+
         chatTimestampObserver = new MutationObserver(function(mutations) {
             if (settings.DateFormatString) {
                 mutations.forEach(function(mutation) {
@@ -305,7 +305,7 @@
         var chatDiv = unsafeWindow.document.getElementById("chat");
         chatTimestampObserver.observe(chatDiv, { childList: true, subtree: true });
     }
-    
+
     /**
      * Pads the provided string on the left using the given padding string to the specified length.
      *
@@ -319,18 +319,18 @@
         if (paddingStr.length === 0) {
             throw new Error("paddingStr must be at least 1 character long");
         }
-    
+
         str = String(str);
         var numCharsToAdd = length - str.length;
         var ret = "";
-        
+
         for (var i = 0; i < numCharsToAdd; i++) {
             ret = paddingStr + ret;
         }
-        
+
         return ret + str;
     }
-    
+
     /**
      * Toggles visibility of chat timestamps when chat isn't being hovered over.
      */
@@ -339,6 +339,7 @@
             injectCssInHead("\
 			#chat .chat-container .chat-messages .chat-main li .meta-info .timeinfo {\
 				display: inline;\
+                opacity: 1;\
 			}\
             ");
         }
